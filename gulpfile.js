@@ -13,7 +13,7 @@ var gutil = require('gulp-util');
 // --- extra plug-in #1 --- ok
 var path = require('path');
 var srcPath = path.join(__dirname, './assets/css/*.css');
-var dstPath = path.join(__dirname, './assets/build/css');
+var dstPath = path.join(__dirname, './dist/css');
 
 //  --- extra plug-in #2 --- not working
 // var cleanCSS = require('gulp-clean-css');
@@ -77,7 +77,8 @@ gulp.task('babel', function () {
 });
  
 // ---------------- JS Beautfier ----------------
-gulp.task('beautify', function() {
+// -- added babel so it will wait for babel to complete
+gulp.task('beautify', ['babel'], function() {
 //   gulp.src('./assets/js/*.js')
   gulp.src('./assets/build/js/babel/*.js')
     .pipe(beautify({indent_size: 2}))
@@ -85,9 +86,10 @@ gulp.task('beautify', function() {
 });
 
 // ---------------- JS Compress Utility ----------------
-gulp.task('compress', function (cb) {
+// -- added beautify so it will wait for beautify to complete
+gulp.task('compress', ['beautify'], function (cb) {
   pump([
-        gulp.src('./assets/build/js/beautify/*.js'),
+        gulp.src('./assets/build/js/*.js'),
         uglify(),
         gulp.dest('./dist/js')
     ],
